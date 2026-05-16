@@ -28,6 +28,8 @@ jobs:
   preview:
     name: Preview
     runs-on: ubuntu-latest
+    outputs:
+      TF_PLAN_EXIT_CODE: ${{ steps.plan.outputs.exit_code }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -35,7 +37,6 @@ jobs:
         uses: hashicorp/setup-terraform@v4
         with:
           terraform_version: ${{ env.TF_VERSION }}
-          terraform_wrapper: false
       - name: Terraform format
         run: terraform fmt -check
       - name: Configure AWS credentials
@@ -48,7 +49,40 @@ jobs:
       - name: Terraform validate
         run: terraform validate -no-color
       - name: Terraform plan
+        continues-on-error: true
+        id: plan
         env:
           TF_VAR_username: ${{ secrets.MYSQL_USERNAME }}
           TF_VAR_password: ${{ secrets.MYSQL_PASSWORD }}
         run: terraform plan -var "project=${{ env.TF_PROJECT }}" -var "environment=${{ env.TF_ENVIRONMENT }}" -input=false -no-color -detailed-exitcode
+      - name: Slack notify
+        uses: slackapi/slack-github-action@v3.0.3
+        with:
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          method: chat.postMessage
+          payload: |
+            {
+              "channel": "C0B4AC1P5NV",
+              "attachments": [
+                {
+                  "color": "#0068B7",
+                  "blocks": [
+                    {
+                      "type": "header",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "Request for approve",
+                        "emoji": true
+                      }
+                    },
+                    {
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }

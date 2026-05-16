@@ -100,8 +100,11 @@ jobs:
     if: needs.preview.outputs.TF_PLAN_EXIT_CODE == 2
     environment: production
     runs-on: ubuntu-latest
+    env:
+      TF_VAR_username: ${{ secrets.MYSQL_USERNAME }}
+      TF_VAR_password: ${{ secrets.MYSQL_PASSWORD }}
     steps:
-      - name: Cehckout repository
+      - name: Checkout repository
         uses: actions/checkout@v3
       - name: Setup terraform
         uses: hashicorp/setup-terraform@v4
@@ -119,5 +122,5 @@ jobs:
         run: |
           terraform init -no-color
       - name: Terraform apply
-        run : |
+        run: |
           terraform apply -var "project=${{ env.TF_PROJECT }}" -var "environment=${{ env.TF_ENVIRONMENT }}" -input=false -auto-approve -no-color

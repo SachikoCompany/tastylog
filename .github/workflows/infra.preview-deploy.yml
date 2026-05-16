@@ -51,4 +51,6 @@ jobs:
           TF_VAR_username: ${{ secrets.MYSQL_USERNAME }}
           TF_VAR_password: ${{ secrets.MYSQL_PASSWORD }}
         run: |
-          terraform plan -var "project=${{ env.TF_PROJECT }}" -var "environment=${{ env.TF_ENVIRONMENT }}" -input=false -no-color -detailed-exitcode
+          terraform plan -var "project=${{ env.TF_PROJECT }}" -var "environment=${{ env.TF_ENVIRONMENT }}" \
+          -input=false -no-color \
+          -detailed-exitcode

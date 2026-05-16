@@ -11,9 +11,11 @@ jobs:
       - name: Slack notify
         uses: slackapi/slack-github-action@v3.0.3
         with:
-          channel-id: "C0B4AC1P5NV"
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          method: chat.postMessage
           payload: |
             {
+              "channel": "C0B4AC1P5NV",
               "attachments": [
                 {
                   "color": "#0068B7",
@@ -37,5 +39,3 @@ jobs:
                 }
               ]
             }
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}

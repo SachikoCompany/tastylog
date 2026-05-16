@@ -56,10 +56,12 @@ jobs:
           TF_VAR_username: ${{ secrets.MYSQL_USERNAME }}
           TF_VAR_password: ${{ secrets.MYSQL_PASSWORD }}
         run: |
+          set +e
           terraform plan -var "project=${{ env.TF_PROJECT }}" -var "environment=${{ env.TF_ENVIRONMENT }}" -input=false -no-color -detailed-exitcode
           plan_exit=$?
           echo "exit_code=${plan_exit}" >> $GITHUB_OUTPUT
           echo "Terraform plan exit status: ${plan_exit}"
+          exit ${plan_exit}
       - name: Slack notify
         uses: slackapi/slack-github-action@v3.0.3
         with:

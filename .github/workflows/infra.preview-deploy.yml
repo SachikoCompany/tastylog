@@ -47,11 +47,8 @@ jobs:
       - name: Terraform validate
         run: terraform validate -no-color
       - name: Terraform plan
-        run: terraform plan \
-            -var 'project=${{ env.TF_PROJECT }}' \
-            -var 'environment=${{ env.TF_ENVIRONMENT }}' \
-            -var 'username=${{ secrets.MYSQL_USERNAME }}' \
-            -var 'password=${{ secrets.MYSQL_PASSWORD }}' \
-            -input=false \
-            -no-color \
-            -detailed-exitcode
+        env:
+          TF_VAR_username: ${{ secrets.MYSQL_USERNAME }}
+          TF_VAR_password: ${{ secrets.MYSQL_PASSWORD }}
+        run: |
+          terraform plan -var "project=${{ env.TF_PROJECT }}" -var "environment=${{ env.TF_ENVIRONMENT }}" -input=false -no-color -detailed-exitcode

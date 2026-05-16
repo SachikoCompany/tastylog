@@ -49,8 +49,8 @@ jobs:
       - name: Terraform validate
         run: terraform validate -no-color
       - name: Terraform plan
-        continues-on-error: true
         id: plan
+        continue-on-error: true
         env:
           TF_VAR_username: ${{ secrets.MYSQL_USERNAME }}
           TF_VAR_password: ${{ secrets.MYSQL_PASSWORD }}

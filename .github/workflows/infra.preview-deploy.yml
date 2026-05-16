@@ -124,3 +124,35 @@ jobs:
       - name: Terraform apply
         run: |
           terraform apply -var "project=${{ env.TF_PROJECT }}" -var "environment=${{ env.TF_ENVIRONMENT }}" -input=false -auto-approve -no-color
+      - name: Deploy notify
+        if: always()
+        uses: slackapi/slack-github-action@v3.0.3
+        with:
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          method: chat.postMessage
+          payload: |
+            {
+              "channel": "C0B4AC1P5NV",
+              "attachments": [
+                {
+                  "color": "#36a64f",
+                  "blocks": [
+                    {
+                      "type": "header",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "Terraform Deploy Completed",
+                        "emoji": true
+                      }
+                    },
+                    {
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "Deploy job finished with status: *${{ job.status }}*\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run details>"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
